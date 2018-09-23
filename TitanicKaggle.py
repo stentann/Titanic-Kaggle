@@ -115,11 +115,19 @@ for i in range(0, 418): #for every person
         if math.isnan(testX[i, j]): #if is nan
             testX[i, j] = 0 #replace with 0
 
+
+#remove sibSp, Parch and embarked
+testX = np.delete(testX, np.s_[3:5:], 1)
+testX = np.delete(testX, np.s_[4:5:], 1)
+trainX = np.delete(trainX, np.s_[3:5:], 1)
+trainX = np.delete(trainX, np.s_[4:5:], 1)
+
 #print sample  of data
 for i in range (0, 20):
-    for j in range(0, 7):
+    for j in range(0, 4):
         print(str(testX[i, j]) + ", ", end = "")
     print(" ")
+
 
 ##split data into train and test sets
 #trainX, testX, trainY, testY = train_test_split(trainX, trainY, test_size = .4)
@@ -155,9 +163,9 @@ subPredictions = my_classifier.predict(testX)
 subKpredictions = my_kClassifier.predict(testX)
 subRandPredictions = my_randForest.predict(testX)
 
-print(str(subRandPredictions))
+#print(str(subRandPredictions))
 
-##make a DataFrame of submission data
+##make a DataFrame of submission data (Random Forest)
 #make passengerIDNum array
 passNum = np.ndarray(shape=(418, 1), dtype=int)
 for i in range(0, 418):
@@ -167,9 +175,34 @@ subRandPredictions2D = np.ndarray(shape=(418, 1), dtype=int)
 for i in range(0, 418):
     subRandPredictions2D[i] = subRandPredictions[i]
 #concatenate IDNum and predictions
-print(str(subRandPredictions.ndim) + ", " + str(passNum.ndim))
 submissionRandF = np.concatenate((passNum, subRandPredictions2D), axis = 1)
 #create DataFrame
 DfRandF = pd.DataFrame(data = submissionRandF, columns=["PassengerId", "Survived"], index = None, dtype=int)
 #transfer DataFrame to CSV
-#DfRandF.to_csv(path_or_buf="RandomForestSubmission2.csv")
+DfRandF.to_csv(path_or_buf="RandomForestSubmission3vars2.csv")
+
+
+##make a DataFrame of submission data (decision tree)
+#reformat subPredictions into a 2D ndarray
+subPredictions2D = np.ndarray(shape=(418, 1), dtype=int)
+for i in range(0, 418):
+    subPredictions2D[i] = subPredictions[i]
+#concatenate IDNum and predictions
+submissionDecTree = np.concatenate((passNum, subPredictions2D), axis = 1)
+#create DataFrame
+DfDecT = pd.DataFrame(data = submissionDecTree, columns=["PassengerId", "Survived"], index = None, dtype=int)
+#transfer DataFrame to CSV
+DfDecT.to_csv(path_or_buf="DecTSubmission3vars2.csv")
+
+
+##make a DataFrame of submission data (k neighbors)
+#reformat subRandPredictions into a 2D ndarray
+subKpredictions2D = np.ndarray(shape=(418, 1), dtype=int)
+for i in range(0, 418):
+    subKpredictions2D[i] = subKpredictions[i]
+#concatenate IDNum and predictions
+submissionKneighbors = np.concatenate((passNum, subKpredictions2D), axis = 1)
+#create DataFrame
+DfKNeighbors = pd.DataFrame(data = submissionKneighbors, columns=["PassengerId", "Survived"], index = None, dtype=int)
+#transfer DataFrame to CSV
+DfKNeighbors.to_csv(path_or_buf="KNeighborsSubmission3vars2.csv")
